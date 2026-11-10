@@ -885,6 +885,10 @@ p.tb-lab{display:block}
 .prob .lhs{white-space:normal}
 @media (max-width:640px){.prob .lhs{font-size:21px}.prob .plead{font-size:19px}}
 .prob .pfig{margin-top:22px}
+/* label leaders (texts with `to`) in a closing figure: base.css styles .gv-leader only inside .gv, and a static plot()
+   in figure() is not inside .gv, so without this the leader has no stroke (More Practice, 2026-11-10; engine gap reported) */
+.prob .pfig svg .gv-leader{fill:none;stroke:var(--muted);stroke-width:1}
+.prob .pfig svg .gv-leader-dot{fill:var(--muted)}
 
 </style>
 </head>
@@ -2801,6 +2805,11 @@ var T_TRIG = paulEx('DiffTrigFcns', 'Derivatives of Trig Functions', 'Example 2'
 var T_SINLIM = paulEx('DiffTrigFcns', 'Derivatives of Trig Functions', 'Example 1');
 var T_HIGH = paulEx('HigherOrderDerivatives', 'Higher Order Derivatives', 'the opening example');
 var T_ACC = paulEx('HigherOrderDerivatives', 'Higher Order Derivatives', 'the paragraph on acceleration');
+/* added with More Practice (2026-11-10) */
+var T_ROOT = paulEx('DiffFormulas', 'Differentiation Formulas', 'Examples 1(b) to 1(d)');
+var T_TANL = paulEx('DiffFormulas', 'Differentiation Formulas', 'Example 4');
+var T_TRIG2 = paulEx('DiffTrigFcns', 'Derivatives of Trig Functions', 'Example 2(a)');
+var T_CYCLE = paulEx('HigherOrderDerivatives', 'Higher Order Derivatives', 'Example 1(b)');
 
 /* ---------------- form guards (see the problem object above) ---------------- */
 var FORM = {
@@ -2828,10 +2837,15 @@ var SECTIONS_P = [
   { id: 'sec-power', title: 'The Power Rule', nav: 'Power Rule', lede: 'These go with Paul’s [Differentiation Formulas](' + T_POW[0] + '), Examples 1 and 4.' },
   { id: 'sec-pq', title: 'The Product and Quotient Rules', nav: 'Product and Quotient', lede: 'These go with Paul’s [Product and Quotient Rule](' + T_PROD[0] + '), Examples 1 to 3.' },
   { id: 'sec-trig', title: 'Trig Functions', nav: 'Trig', lede: 'These go with Paul’s [Derivatives of Trig Functions](' + T_TRIG[0] + '), Examples 1 and 2.' },
-  { id: 'sec-higher', title: 'Higher Order Derivatives', nav: 'Higher Order', lede: 'These go with Paul’s [Higher Order Derivatives](' + T_HIGH[0] + '): the opening, Example 1(b) and the paragraph on acceleration.' }
+  { id: 'sec-higher', title: 'Higher Order Derivatives', nav: 'Higher Order', lede: 'These go with Paul’s [Higher Order Derivatives](' + T_HIGH[0] + '): the opening, Example 1(b) and the paragraph on acceleration.' },
+  { id: 'sec-more', title: 'More Practice (Only If You Want It)', nav: 'More Practice', lede: 'Nothing in this section is required. If a kind of problem above took you more than one try, the problem of the same kind here gives you another go: Problems 9 and 10 for the power rule, Problems 11 to 13 for the product and quotient rules, Problems 14 and 15 for trig functions, and Problems 16 and 17 for higher order derivatives. The Unit 5 Problem Set comes next either way.' }
 ];
 
 /* ---------------- the problems ---------------- */
+/* Problem 10's two tangent points, x = (5 ± sqrt(34))/3, and their heights on f(x) = x^3 − 5x^2 + x */
+var M2A = (5 + Math.sqrt(34)) / 3, M2B = (5 - Math.sqrt(34)) / 3;
+function m2F(x) { return x * x * x - 5 * x * x + x; }
+var M2FA = m2F(M2A), M2FB = m2F(M2B);
 var PROBLEMS = [
   /* 1. power rule with a negative exponent */
   { id: 'p1', sec: 'sec-power', task: 'Find `f′(x)`.', board: 'f(x) = 2x^5 − F{4}{x^3} + 7', teach: T_POW,
@@ -3053,7 +3067,267 @@ var PROBLEMS = [
     graph: { x: [0, 8], y: [0, 70], ticks: { x: 1, y: 10 }, fns: [{ f: function (t) { return 3 * t * t - 24 * t + 60; } }],
       tangent: { f: 0, at: 2, slope: -12, half: 1.2 }, dots: [{ x: 2, y: 24, label: '(2, 24)', at: 'sw' }],
       aria: 'The graph of the velocity h′(t) = 3t squared − 24t + 60 from t = 0 to 8: it falls from 60 to a low of 12 at t = 4, then rises back to 60. At (2, 24) a tangent line falls with slope −12.' },
-    after: 'The velocity graph falls at `t = 2`, with slope `h″(2) = −12`. The velocity stays positive, so the drone keeps rising.' }
+    after: 'The velocity graph falls at `t = 2`, with slope `h″(2) = −12`. The velocity stays positive, so the drone keeps rising.' },
+
+  /* ================= More Practice (optional), added 2026-11-10 by the clarity rebuild =================
+     From the practice twins removed from Unit 5 Worked Examples (plan/clarity-rebuild/twins/unit-05.md: 5.1, 5.3, 5.5,
+     5.6, 5.8, 5.9) and the value-add Paul problems (plan/clarity-rebuild/units/unit-05/value-add.md: Differentiation
+     Formulas 20, Derivatives of Trig Functions 4). Every key and wrong answer: SPEC.md, "More Practice". */
+
+  /* 9. (twin 5.1) the power rule on a root and two fractions */
+  { id: 'm1', sec: 'sec-more', task: 'Find `g′(x)` and `g′(1)`.', board: 'g(x) = 2x^6 − F{9}{∛(x)} + F{10}{x}', teach: T_ROOT,
+    steps: [
+      { lead: 'Write `F{9}{∛(x)}` as `9x^n`. A cube root is the power `F{1}{3}`.', ask: 'n =', num: true, ans: '-1/3',
+        wrongs: [['1/3', '`∛(x) = x^(1/3)` is on the bottom. Moving it to the top changes the sign of its exponent.', ['#ex-p2', 'See Problem 2, the same step']],
+          [['-3', '3'], '`∛(x)` is `x^(1/3)`, the power one third, not the power 3.']],
+        hints: ['`∛(x) = x^(1/3)`, and `F{1}{x^m} = x^(−m)`.'] },
+      { lead: 'Write `F{10}{x}` as `10x^n`.', ask: 'n =', num: true, ans: '-1',
+        wrongs: [['1', '`x` alone is `x^1`. Moving it from the bottom to the top changes the sign of its exponent: `F{1}{x} = x^(−1)`.']],
+        hints: ['`F{1}{x^m} = x^(−m)`, and `x = x^1`.'] },
+      { show: 'g(x) = 2x^6 − 9x^(−1/3) + 10x^(−1)' },
+      { lead: 'Differentiate the middle term, `−9x^(−1/3)`.', ask: 'Dx (−9x^(−1/3)) =', ans: '3x^(-4/3)',
+        wrongs: [['-3x^(-4/3)', 'Bring the exponent down: `−9 · (−F{1}{3}) = 3`. A negative times a negative is positive.'],
+          [['3x^(2/3)', '-3x^(2/3)'], 'Subtract 1 from the exponent: `−F{1}{3} − 1 = −F{4}{3}`. Going to `F{2}{3}` adds 1.'],
+          ['3x^(-1/3)', 'Bring the exponent down and also subtract 1 from it: `−F{1}{3} − 1 = −F{4}{3}`.'],
+          ['27x^(-4/3)', 'Multiply `−9` by the exponent `−F{1}{3}`. Dividing by it gives 27.']],
+        hints: ['Multiply `−9` by the exponent `−F{1}{3}`, then subtract 1 from the exponent.'] },
+      { lead: 'Differentiate the last term, `10x^(−1)`.', ask: 'Dx (10x^(−1)) =', ans: '-10x^(-2)',
+        wrongs: [['10x^(-2)', 'Bring the exponent down: `10 · (−1) = −10`.'],
+          ['-10', 'Subtract 1 from the exponent: `−1 − 1 = −2`. Going to `x^0` adds 1.'],
+          ['-10x^(-1)', 'Bring the exponent down and also subtract 1 from it: `−1 − 1 = −2`.']],
+        hints: ['Multiply 10 by the exponent `−1`, then subtract 1 from the exponent.'] },
+      { lead: 'Put the three terms together.', ask: 'g′(x) =', ans: '12x^5 + 3x^(-4/3) - 10x^(-2)',
+        wrongs: [['12x^5 - 3x^(-4/3) - 10x^(-2)', 'Use the line for the middle term: the derivative of `−9x^(−1/3)` is `+3x^(−4/3)`.'],
+          ['12x^5 + 3x^(-4/3) + 10x^(-2)', 'Use the line for the last term: the derivative of `10x^(−1)` is `−10x^(−2)`.'],
+          ['6x^5 + 3x^(-4/3) - 10x^(-2)', 'Keep the constant multiple: `Dx (2x^6) = 2 · 6x^5 = 12x^5`.']],
+        hints: ['Use the power rule on `2x^6`, then add the two lines above.'],
+        why: 'With positive exponents this is `12x^5 + F{3}{x^(4/3)} − F{10}{x^2}`. Both forms are correct.' },
+      { lead: 'Evaluate `g′(1)`.', ask: 'g′(1) =', num: true, ans: '5',
+        wrongs: [['-1', 'The middle term is `+3x^(−4/3)`, so add 3: `12 + 3 − 10`.'],
+          ['25', 'The last term is `−10x^(−2)`, so subtract 10: `12 + 3 − 10`.'],
+          ['15', 'Include the last term: `−10 · 1^(−2) = −10`.']],
+        hints: ['Any power of 1 is 1, so each term is just its coefficient.'] }] },
+
+  /* 10. (Paul, Differentiation Formulas, Problem 20) where the tangent line has a given slope */
+  { id: 'm2', sec: 'sec-more', task: 'Find every `x` at which the tangent line to `f` is parallel to the line `y = 4x + 23`.', board: 'f(x) = x^3 − 5x^2 + x', teach: T_TANL,
+    steps: [
+      { lead: 'What does “parallel to `y = 4x + 23`” say about the tangent line?', ok: 0, pick: [
+        ['Its slope is 4, so `f′(x) = 4`', 'Parallel lines have the same slope, and the slope of `y = 4x + 23` is 4.'],
+        ['It crosses the `y`-axis at 23', '23 is where the given line crosses the `y`-axis. A parallel line shares only its slope, 4.'],
+        ['Its slope is `−F{1}{4}`', 'That is the slope of a perpendicular line. Parallel lines have equal slopes.'],
+        ['It meets the curve where `f(x) = 4x + 23`', 'That equation finds where the curve meets the given line. The tangent line only has to match its slope, so set `f′(x) = 4`.']] },
+      { lead: 'Find `f′(x)`.', ask: 'f′(x) =', ans: '3x^2 - 10x + 1',
+        wrongs: [['3x^2 - 10x', 'The derivative of `x` is 1.'],
+          ['3x^2 - 5x + 1', 'Bring the 2 down: `Dx (5x^2) = 10x`.']],
+        hints: ['Use the power rule on each term.'] },
+      { show: ['3x^2 − 10x + 1 = 4', '3x^2 − 10x − 3 = 0'] },
+      { lead: 'This quadratic does not factor with whole numbers. Use the quadratic formula, `x = F{−b ± sqrt(b^2 − 4ac)}{2a}`, with `a = 3`, `b = −10` and `c = −3`. First find the number under the root.', ask: 'b^2 − 4ac =', num: true, ans: '136',
+        wrongs: [['64', '`−4ac = −4 · 3 · (−3) = +36`, so add it: `100 + 36`.'],
+          ['-64', '`(−10)^2 = 100`. Squaring a negative number gives a positive one.'],
+          ['88', 'Use `c = −3` from `3x^2 − 10x − 3 = 0`, not the 1 from `f′(x)`. Moving the 4 across changed it.']],
+        hints: ['`b^2 = (−10)^2` and `4ac = 4 · 3 · (−3)`.'] },
+      { lead: 'Finish the formula: put `−b = 10`, `sqrt(136)` and `2a = 6` into it. Type both values, separated by a comma, exactly or as decimals to two places.', ask: 'x =', list: true, num: true, tol: 0.006,
+        ans: '(10 + sqrt(136))/6, (10 - sqrt(136))/6',
+        wrongs: [['(-10 + sqrt(136))/6, (-10 - sqrt(136))/6', '`b = −10`, so `−b = 10`. The top starts with `+10`.'],
+          ['(10 + sqrt(136))/3, (10 - sqrt(136))/3', 'Divide by `2a = 2 · 3 = 6`, not by 3.'],
+          [['3.61', '-0.28'], 'The `±` gives two values: one with `+sqrt(136)` and one with `−sqrt(136)`.']],
+        hints: ['`sqrt(136) ≈ 11.66`. Work out `F{10 + 11.66}{6}` and `F{10 − 11.66}{6}`.'],
+        why: '`sqrt(136) = 2sqrt(34)`, so the exact values are `x = F{5 ± sqrt(34)}{3}`, about 3.61 and `−0.28`.' }],
+    graph: { x: [-1.5, 5], y: [-20, 6], ticks: { x: 1, y: 5 }, fns: [{ f: function (x) { return x * x * x - 5 * x * x + x; } }],
+      segs: [{ from: [M2A - 1, M2FA - 4], to: [M2A + 1, M2FA + 4], role: 'rate' }, { from: [M2B - 1, M2FB - 4], to: [M2B + 1, M2FB + 4], role: 'rate' }],
+      dots: [{ x: M2A, y: M2FA, label: 'x ≈ 3.61', at: 'se' }, { x: M2B, y: M2FB }], texts: [{ x: 1.9, y: 2.5, text: 'x ≈ −0.28', to: [M2B, M2FB] }],
+      aria: 'The graph of f(x) = x cubed − 5x squared + x, rising to a high point near x = 0.1, falling to a low point near x = 3.2, then rising. Two tangent lines of slope 4 touch it, at x ≈ −0.28 and at x ≈ 3.61.' },
+    after: 'Both tangent lines have slope 4, the slope of `y = 4x + 23`, so each is parallel to that line.' },
+
+  /* 11. (twin 5.3, part a) the product rule with a root */
+  { id: 'm3', sec: 'sec-more', task: 'Find `h′(x)` and `h′(4)`.', board: 'h(x) = (sqrt(x) + 2)(x^2 − 3)', teach: T_PROD,
+    steps: [
+      { lead: 'The first factor is `f(x) = sqrt(x) + 2 = x^(1/2) + 2`.', ask: 'f′(x) =', ans: '(1/2)x^(-1/2)',
+        wrongs: [['(1/2)x^(-1/2) + 2', 'The constant 2 has derivative 0.'],
+          ['x^(-1/2)', 'Bring the exponent down as a factor: `Dx (x^(1/2)) = F{1}{2} x^(−1/2)`.'],
+          ['(1/2)x^(1/2)', 'Subtract 1 from the exponent: `F{1}{2} − 1 = −F{1}{2}`.'],
+          /* last, so only these exact typings reach it: the same value as the line above, typed as 1/2sqrt(x) */
+          [['1/2sqrt(x)', '1/2 sqrt(x)', '1/2sqrt x', '1/2√x', '1/2√(x)'], 'Without parentheses, `/` divides only by the 2, so the computer reads that as `F{1}{2} sqrt(x)`. If you mean 1 over `2sqrt(x)`, type ⟦1/(2sqrt(x))⟧.']],
+        hints: ['Use the power rule on `x^(1/2)`. A constant has derivative 0.'] },
+      { lead: 'The second factor is `g(x) = x^2 − 3`.', ask: 'g′(x) =', ans: '2x',
+        wrongs: [['2x - 3', 'The constant `−3` has derivative 0.']],
+        hints: ['Use the power rule on `x^2`. A constant has derivative 0.'] },
+      { lead: 'Put the four pieces into the product rule, `h′ = f′g + fg′`.', ask: 'h′(x) =', ans: '(1/2)x^(-1/2)(x^2 - 3) + (sqrt(x) + 2)(2x)',
+        wrongs: [[['(1/2)x^(-1/2)(2x)', 'x^(1/2)'], 'That multiplies the two derivatives. The product rule has two terms: `f′g + fg′`.', ['#ex-p3', 'See Problem 3, the same step']],
+          ['(1/2)x^(-1/2)(x^2 - 3)', 'That is only `f′g`. Add the second term, `fg′ = (sqrt(x) + 2)(2x)`.'],
+          ['(sqrt(x) + 2)(2x)', 'That is only `fg′`. Add the first term, `f′g = F{1}{2} x^(−1/2)(x^2 − 3)`.']],
+        hints: ['`h′ = f′g + fg′`: the derivative of the first factor times the second, plus the first factor times the derivative of the second.'],
+        why: 'Multiplying out first and using the power rule gives an equal answer.' },
+      { lead: 'Evaluate `h′(4)`.', ask: 'h′(4) =', num: true, ans: '141/4',
+        wrongs: [['2', 'That is `f′(4) · g′(4)`, the product of the derivatives. Use the product rule from the previous line.'],
+          ['32', 'Include the first term: `F{1}{2} · 4^(−1/2) · 13 = F{13}{4}`.'],
+          ['13/4', 'Include the second term: `(sqrt(4) + 2)(2 · 4) = 32`.'],
+          ['45', '`4^(−1/2) = F{1}{sqrt(4)} = F{1}{2}`, not 2.']],
+        hints: ['`sqrt(4) = 2`, so `f(4) = 4` and `f′(4) = F{1}{2} · F{1}{2} = F{1}{4}`. Also `g(4) = 13` and `g′(4) = 8`.'],
+        why: '`F{141}{4} = 35.25`.' }] },
+
+  /* 12. (twin 5.3, part b) the quotient rule */
+  { id: 'm4', sec: 'sec-more', task: 'Find `k′(x)` and `k′(2)`.', board: 'k(x) = F{2x + 5}{x^2 − 2}', teach: T_QUOT,
+    steps: [
+      { lead: 'Which rule do you use?', ok: 0, pick: [
+        ['The quotient rule, `(F{f}{g})′ = F{f′g − fg′}{g^2}`', 'The top and the bottom both change with `x`, and the bottom is not a single power of `x`.'],
+        ['Differentiate the top and the bottom: `F{2}{2x}`', 'The derivative of a quotient is not the quotient of the derivatives.', ['#ex-p4', 'See Problem 4, the same choice']],
+        ['Split it into `F{2x}{x^2} + F{5}{−2}`', 'A sum on top splits, as in `F{a + b}{c} = F{a}{c} + F{b}{c}`. A sum on the bottom does not.']] },
+      { show: ['f = 2x + 5, f′ = 2', 'g = x^2 − 2, g′ = 2x'] },
+      { lead: 'Write the top of the quotient rule, `f′g − fg′ = 2(x^2 − 2) − (2x + 5)(2x)`, multiplied out.', ask: 'f′g − fg′ =', ans: '-2x^2 - 10x - 4', form: MULTIPLIED,
+        wrongs: [['2x^2 + 10x + 4', 'That is `fg′ − f′g`, the order reversed. The quotient rule starts with the derivative of the top: `f′g − fg′`.', ['#ex-p4', 'See Problem 4, the same step']],
+          ['-2x^2 + 10x - 4', 'The minus sign applies to every term of `(2x + 5)(2x) = 4x^2 + 10x`, so `−(4x^2 + 10x) = −4x^2 − 10x`.'],
+          ['6x^2 + 10x - 4', 'The second product is subtracted: `2x^2 − 4 − (4x^2 + 10x)`.']],
+        hints: ['Multiply out `2(x^2 − 2)` and `(2x + 5)(2x)` separately, then subtract the second from the first.'] },
+      { lead: 'Divide by the bottom squared.', ask: 'k′(x) =', ans: '(-2x^2 - 10x - 4)/(x^2 - 2)^2',
+        wrongs: [['(-2x^2 - 10x - 4)/(x^2 - 2)', 'The quotient rule divides by `g^2`, the bottom squared: `(x^2 − 2)^2`.'],
+          ['(-2x^2 - 10x - 4)/(x^4 + 4)', '`(x^2 − 2)^2` is not `x^4 + 4`: squaring a difference gives a middle term. Leave the bottom as `(x^2 − 2)^2`.']],
+        hints: ['Put the top from the previous line over `(x^2 − 2)^2`.'] },
+      { lead: 'Evaluate `k′(2)`.', ask: 'k′(2) =', num: true, ans: '-8',
+        wrongs: [['-16', 'Square the bottom: at `x = 2` it is `(4 − 2)^2 = 4`.'],
+          ['8', 'The top at `x = 2` is `−8 − 20 − 4 = −32`, which is negative.'],
+          ['-1.6', '`(x^2 − 2)^2` at `x = 2` is `2^2 = 4`. Squaring each term separately gives `16 + 4 = 20`.']],
+        hints: ['At `x = 2` the top is `−2(2)^2 − 10(2) − 4` and the bottom is `(2^2 − 2)^2`.'] }] },
+
+  /* 13. (twin 5.6) the product and quotient rules from values at a point */
+  { id: 'm5', sec: 'sec-more', task: 'The functions `f` and `g` have the values below at `x = 0`, and `q(x) = F{f(x)}{g(x)}`.', board: ['f(0) = 6, f′(0) = −1', 'g(0) = 3, g′(0) = 2'], teach: T_QUOT,
+    steps: [
+      { lead: 'Put the values into the product rule, `(fg)′(0) = f′(0)g(0) + f(0)g′(0)`.', ask: '(fg)′(0) =', num: true, ans: '9', teach: T_PROD,
+        wrongs: [['-2', 'That is `f′(0) · g′(0)`, the product of the derivatives. Use the product rule: `f′(0)g(0) + f(0)g′(0)`.', ['#ex-p3', 'See Problem 3, the product rule']],
+          ['15', '`f′(0) = −1`, so the first term is `(−1)(3) = −3`, not 3.'],
+          ['18', 'That is `f(0)g(0)`, the value of `fg` at 0. Its derivative needs the product rule.']],
+        hints: ['`(−1)(3) + (6)(2)`.'] },
+      { lead: 'Put the values into the quotient rule, `q′(0) = F{f′(0)g(0) − f(0)g′(0)}{g(0)^2}`.', ask: 'q′(0) =', num: true, ans: '-5/3',
+        wrongs: [['-1/2', 'That is `F{f′(0)}{g′(0)}`, the quotient of the derivatives. Use the quotient rule.'],
+          ['5/3', 'That is `fg′ − f′g` on top, the order reversed. Start with the derivative of the top: `(−1)(3) − (6)(2) = −15`.', ['#ex-p4', 'See Problem 4, the same order']],
+          ['-5', 'Square the bottom: `g(0)^2 = 3^2 = 9`.'],
+          ['1', 'The quotient rule subtracts on top: `(−1)(3) − (6)(2) = −3 − 12`.']],
+        hints: ['The top is `(−1)(3) − (6)(2)` and the bottom is `3^2`.'] },
+      { lead: 'Is `q` increasing or decreasing at `x = 0`?', ok: 0, pick: [
+        ['Decreasing, because `q′(0)` is negative', 'The sign of the derivative says whether the function rises or falls.'],
+        ['Increasing, because `q(0) = 2` is positive', 'The sign of `q(0)` says only that the graph is above the axis. Which way it goes comes from the sign of `q′(0)`.'],
+        ['Increasing, because `(fg)′(0) = 9` is positive', 'That is the derivative of the product `fg`. For `q`, use `q′(0)`.']] },
+      { lead: 'Find the point on the curve of `q` at `x = 0`.', ask: 'q(0) =', num: true, ans: '2',
+        wrongs: [['0.5', 'That is `F{g(0)}{f(0)}`, upside down. `q = F{f}{g}`, so `q(0) = F{6}{3}`.'],
+          ['18', 'That is `f(0)g(0)`. `q` divides: `q(0) = F{f(0)}{g(0)}`.']],
+        hints: ['`q(0) = F{f(0)}{g(0)}`.'] },
+      { lead: 'The tangent line at `x = 0` is `y = q(0) + q′(0)(x − 0)`. Use it to estimate `q(0.3)`.', ask: 'q(0.3) ≈', num: true, ans: '1.5', tol: 0.0005,
+        wrongs: [['2.5', 'The slope is negative, so the estimate is below `q(0) = 2`: `2 + (−F{5}{3})(0.3)`.'],
+          ['-0.5', 'That is the change, `−F{5}{3} · 0.3`. Add it to `q(0) = 2`.'],
+          ['1/3', 'That steps a whole unit. Multiply the slope by 0.3, the distance from 0 to 0.3.']],
+        hints: ['Put `x = 0.3` into `y = 2 − F{5}{3} x`.'] }],
+    graph: { x: [-0.5, 1.5], y: [0, 4], ticks: { x: 0.5, y: 1 }, fns: [{ f: function (x) { return (6 - x) / (3 + 2 * x); } }],
+      tangent: { f: 0, at: 0, slope: -5 / 3, half: 0.6 }, dots: [{ x: 0, y: 2, label: '(0, 2)', at: 'ne' }, { x: 0.3, y: 1.5, role: 'k' }], texts: [{ x: 0.55, y: 2.9, text: '(0.3, 1.5)', to: [0.3, 1.5] }],
+      aria: 'The graph of q(x) = (6 − x)/(3 + 2x), falling from left to right, with its tangent line of slope −5/3 at (0, 2). The tangent line passes through (0.3, 1.5), just below the curve.' },
+    after: 'One pair that fits the four values is `f(x) = 6 − x` and `g(x) = 3 + 2x`. Then `q(0.3) = F{5.7}{3.6} ≈ 1.58`, close to the estimate 1.5.' },
+
+  /* 14. (Paul, Derivatives of Trig Functions, Problem 4, with a value at π/3) the derivative of sec x */
+  { id: 'm6', sec: 'sec-more', task: 'Find `f′(x)` and `f′(F{pi}{3})`.', board: 'f(x) = 2cos x − 6sec x + 3', teach: T_TRIG2,
+    steps: [
+      { lead: 'Differentiate `2cos x`.', ask: 'Dx (2cos x) =', ans: '-2sin(x)',
+        wrongs: [['2sin(x)', 'The derivative of `cos x` has a minus sign: `Dx (cos x) = −sin x`. The three functions whose names start with "co" have a minus sign.', ['#ex-p5', 'See Problem 5, the same step']],
+          ['-2cos(x)', 'The derivative of `cos x` is `−sin x`: the cosine becomes a sine.']],
+        hints: ['The derivative of `cos x` is `−sin x`. Multiply it by 2.'] },
+      { lead: 'Differentiate `−6sec x`.', ask: 'Dx (−6sec x) =', ans: '-6sec(x)tan(x)',
+        wrongs: [['6sec(x)tan(x)', '`sec x` does not start with "co", so its derivative has no minus sign: `Dx (sec x) = sec x tan x`. The `−6` stays in front.'],
+          ['-6sec(x)^2', '`sec^2 x` is the derivative of `tan x`. For `sec x`, use `sec x tan x`.'],
+          ['6csc(x)cot(x)', 'That comes from `csc x`, whose derivative is `−csc x cot x`. For `sec x`, use `sec x tan x`.']],
+        hints: ['Look up the derivative of `sec x` and multiply it by `−6`.'] },
+      { lead: 'Put the three terms together.', ask: 'f′(x) =', ans: '-2sin(x) - 6sec(x)tan(x)',
+        wrongs: [['-2sin(x) - 6sec(x)tan(x) + 3', 'The constant 3 has derivative 0.'],
+          ['2sin(x) - 6sec(x)tan(x)', 'Use the first line: the derivative of `2cos x` is `−2sin x`.'],
+          ['-2sin(x) + 6sec(x)tan(x)', 'Use the second line: the derivative of `−6sec x` is `−6sec x tan x`.']],
+        hints: ['Add the two lines above. A constant has derivative 0.'] },
+      { lead: 'Evaluate `f′(F{pi}{3})`. Work in radians.', ask: 'f′(F{pi}{3}) =', num: true, ans: '-13sqrt(3)',
+        wrongs: [['-11sqrt(3)', 'The first term is `−2sin x`, which is `−sqrt(3)` at `F{pi}{3}`, not `+sqrt(3)`.'],
+          ['-4sqrt(3)', '`sec(F{pi}{3}) = F{1}{cos(F{pi}{3})} = 2`, not `F{1}{2}`.'],
+          ['-5sqrt(3)', '`tan(F{pi}{3}) = F{sin(F{pi}{3})}{cos(F{pi}{3})} = sqrt(3)`, not `F{1}{sqrt(3)}`.']],
+        hints: ['`sin(F{pi}{3}) = F{sqrt(3)}{2}` and `cos(F{pi}{3}) = F{1}{2}`. So `sec(F{pi}{3}) = 2` and `tan(F{pi}{3}) = sqrt(3)`.'],
+        why: '`−13sqrt(3) ≈ −22.52`.' }] },
+
+  /* 15. (twin 5.5) a limit with tangent and sine */
+  { id: 'm7', sec: 'sec-more', board: 'lim{x→0} F{tan(3x)}{sin(9x)}', teach: T_SINLIM,
+    steps: [
+      { lead: 'Plugging in `x = 0` gives `F{0}{0}`. What do you try?', ok: 0, pick: [
+        ['Write `tan(3x)` as `F{sin(3x)}{cos(3x)}`, then make each sine sit over its own inside', 'The fact `lim{θ→0} F{sin θ}{θ} = 1` needs the same expression inside the sine and underneath it.'],
+        ['The limit is 1, because `F{sin θ}{θ} → 1`', 'That fact needs the same expression inside the sine and underneath it. Here the bottom is `sin(9x)`, not `9x`.', ['#ex-p6', 'See Problem 6, the same first move']],
+        ['The limit is 0, because `tan 0 = 0`', 'The bottom is 0 at `x = 0` too, so `F{0}{0}` settles nothing.'],
+        ['Write `tan(3x)` as `3tan x`', '`tan(3x)` is not `3tan x`, just as `sin(3x)` is not `3sin x`.']] },
+      { show: 'F{tan(3x)}{sin(9x)} = F{sin(3x)}{cos(3x) sin(9x)}' },
+      { lead: 'Multiply and divide by `3x` and by `9x`, so that each sine sits over its own inside: `F{sin(3x)}{3x} · F{9x}{sin(9x)} · F{1}{cos(3x)}`, times one more factor made of `3x` and `9x`. Find that factor.', ask: '"extra factor" =', ans: '3x/(9x)',
+        wrongs: [[['9x/(3x)', '3'], 'That is upside down. The `3x` placed under `sin(3x)` must come back on top, and the `9x` placed over `sin(9x)` must come back on the bottom.'],
+          ['1', 'The `3x` and the `9x` you brought in do not undo each other. Put the `3x` back on top and the `9x` back on the bottom: `F{3x}{9x}`.'],
+          [['27x^2', '(3x)(9x)'], 'Put the `3x` on top and the `9x` on the bottom, so the extra factor is a quotient.']],
+        hints: ['Check by multiplying the four factors back together: they must give `F{sin(3x)}{cos(3x) sin(9x)}`.'],
+        why: '`F{3x}{9x} = F{1}{3}` for every `x ≠ 0`.' },
+      { lead: 'As `x → 0`, `F{sin(3x)}{3x} → 1`, `F{9x}{sin(9x)} → 1` and `cos(3x) → 1`.', ask: 'lim{x→0} F{tan(3x)}{sin(9x)} =', num: true, ans: '1/3',
+        wrongs: [['3', 'That is upside down. The extra factor is `F{3x}{9x} = F{1}{3}`.'],
+          ['1', 'Keep the extra factor: `1 · 1 · 1 · F{1}{3}`.'],
+          ['0', 'The bottom also goes to 0, so `F{0}{0}` settles nothing. Use the rewritten form.']],
+        hints: ['Replace each factor by its limit and multiply: three of them go to 1.'] }],
+    graph: { x: [-0.3, 0.3], y: [0, 3.5], ticks: { x: 0.1, y: 1 }, fns: [{ f: function (x) { return Math.tan(3 * x) / Math.sin(9 * x); }, n: 400 }],
+      dots: [{ x: 0, y: 1 / 3, open: true }], texts: [{ x: 0.1, y: 1.6, text: '(0, 1/3)', to: [0, 1 / 3] }],
+      aria: 'The graph of tan(3x)/sin(9x) for x from −0.3 to 0.3: a U-shaped curve with an open circle, a hole, at its lowest point (0, 1/3).' },
+    after: 'The function has no value at `x = 0`, and its graph has a hole there at height `F{1}{3}`.' },
+
+  /* 16. (twin 5.9) higher derivatives and a repeating pattern */
+  { id: 'm8', sec: 'sec-more', task: 'Find the first four derivatives of `g`, then `g^((41))(x)`.', board: 'g(x) = x^5 − 3sin x', teach: T_CYCLE,
+    steps: [
+      { lead: 'Find the first derivative.', ask: 'g′(x) =', ans: '5x^4 - 3cos(x)',
+        wrongs: [['5x^4 + 3cos(x)', 'The derivative of `sin x` is `cos x`, with no minus sign, so `−3sin x` gives `−3cos x`.'],
+          ['5x^4 - 3sin(x)', 'The derivative of `sin x` is `cos x`. The sine becomes a cosine.']],
+        hints: ['Use the power rule on `x^5` and `Dx (sin x) = cos x`.'] },
+      { lead: 'Differentiate again.', ask: 'g″(x) =', ans: '20x^3 + 3sin(x)',
+        wrongs: [['20x^3 - 3sin(x)', '`Dx (cos x) = −sin x`, so `−3` times `−sin x` is `+3sin x`.', ['#ex-p5', 'See Problem 5, the same sign']],
+          ['20x^4 + 3sin(x)', 'Subtract 1 from the exponent: `Dx (5x^4) = 20x^3`.']],
+        hints: ['Differentiate each term of `g′(x) = 5x^4 − 3cos x`.'] },
+      { lead: 'Differentiate once more.', ask: 'g‴(x) =', ans: '60x^2 + 3cos(x)',
+        wrongs: [['60x^2 - 3cos(x)', '`Dx (sin x) = cos x`, with no minus sign, so `3sin x` gives `+3cos x`.'],
+          ['60x^3 + 3cos(x)', 'Subtract 1 from the exponent: `Dx (20x^3) = 60x^2`.']],
+        hints: ['Differentiate each term of `g″(x) = 20x^3 + 3sin x`.'] },
+      { lead: 'Find the fourth derivative.', ask: 'g^((4))(x) =', ans: '120x - 3sin(x)',
+        wrongs: [['120x + 3sin(x)', '`Dx (cos x) = −sin x`, so `3` times `−sin x` is `−3sin x`.'],
+          ['120x^2 - 3sin(x)', 'Subtract 1 from the exponent: `Dx (60x^2) = 120x`.']],
+        hints: ['Differentiate each term of `g‴(x) = 60x^2 + 3cos x`.'] },
+      { lead: 'Each derivative lowers the power of `x` by one. After how many derivatives is the `x^5` term gone completely?', ask: '"number of derivatives" =', num: true, ans: '6',
+        wrongs: [['5', 'The fifth derivative of `x^5` is 120, a constant, which is not 0 yet. One more derivative makes it 0.'],
+          ['4', 'The fourth derivative still has `120x`. Two more derivatives make it 0.']],
+        hints: ['Keep going: `120x`, then 120, then?'] },
+      { lead: 'From the sixth derivative on, only the part that comes from `−3sin x` is left, and its derivatives repeat every four steps: `−3cos x`, `3sin x`, `3cos x`, `−3sin x`. Divide 41 by 4 and use the remainder.', ask: 'g^((41))(x) =', ans: '-3cos(x)',
+        wrongs: [['-3sin(x)', 'That is where the cycle starts again, at the 40th derivative. `41 = 4 · 10 + 1`, so take one more step.'],
+          ['5x^4 - 3cos(x)', 'That copies `g′` whole. The `x^5` term is gone after six derivatives, so only the part from `−3sin x` repeats.'],
+          ['3cos(x)', '`41 = 4 · 10 + 1`, so the 41st derivative matches the first step of the cycle: the derivative of `−3sin x` is `−3cos x`.']],
+        hints: ['`41 = 4 · 10 + 1`. The 40th derivative of `−3sin x` is `−3sin x` again; take one more derivative.'] }] },
+
+  /* 17. (twin 5.8) position, velocity and acceleration */
+  { id: 'm9', sec: 'sec-more', task: 'A ball is thrown upward. Its height after `t` seconds is `h(t)` meters.', board: 'h(t) = 2 + 19.6t − 4.9t^2', v: 't', teach: T_ACC,
+    steps: [
+      { lead: 'Find the velocity, `v(t) = h′(t)`.', ask: 'v(t) =', ans: '19.6 - 9.8t',
+        wrongs: [['21.6 - 9.8t', 'The constant 2 has derivative 0.'],
+          ['19.6 - 4.9t', 'Bring the 2 down: `Dt (4.9t^2) = 9.8t`.'],
+          ['19.6t - 9.8t', 'The derivative of `19.6t` is 19.6, not `19.6t`.']],
+        hints: ['Use the power rule on each term.'] },
+      { lead: 'Find the acceleration, `a(t) = v′(t)`.', ask: 'a(t) =', ans: '-9.8',
+        wrongs: [['9.8', 'The derivative of `−9.8t` is `−9.8`. Keep the minus sign.'],
+          ['-9.8t', 'The derivative of `−9.8t` is the constant `−9.8`.']],
+        hints: ['Differentiate `v(t) = 19.6 − 9.8t`.'] },
+      { lead: 'The ball is momentarily at rest when its velocity is 0. When is that?', ask: 't =', num: true, ans: '2', units: 'seconds',
+        wrongs: [['21.6', 'That is `h(2)`, the height then. The question asks when: solve `v(t) = 0`.'],
+          ['0.5', 'Solve `19.6 − 9.8t = 0`: `9.8t = 19.6`, so `t = F{19.6}{9.8}`, not `F{9.8}{19.6}`.'],
+          ['4', 'That solves `19.6 − 4.9t = 0`. The velocity is `19.6 − 9.8t`.']],
+        hints: ['Solve `19.6 − 9.8t = 0`.'] },
+      { lead: 'Find the velocity at `t = 3`.', ask: 'v(3) =', num: true, ans: '-9.8', units: 'm/s', unitAlts: ['meters per second', 'm/sec'],
+        wrongs: [['9.8', '`19.6 − 9.8 · 3 = 19.6 − 29.4`, which is negative.'],
+          ['16.7', 'That is `h(3)`, the height in meters. The velocity is `v(3)`.']],
+        hints: ['Put `t = 3` into `19.6 − 9.8t`.'] },
+      { lead: 'Is the ball rising or falling at `t = 3`?', ok: 0, pick: [
+        ['Falling, because `v(3)` is negative', 'The sign of the velocity gives the direction: negative means the height is decreasing.'],
+        ['Rising, because `h(3) = 16.7` is positive', 'A positive height says only that the ball is above the ground. Which way it moves comes from the sign of `v(3)`.', ['#ex-p8', 'See Problem 8, the same question']],
+        ['Falling, because `a(t) = −9.8` is negative', 'The acceleration is `−9.8` at every time, including `t = 1`, when the ball is rising. The direction comes from the sign of `v(3)`.']] }],
+    graph: { x: [0, 4.2], y: [0, 26], ticks: { x: 1, y: 5 }, fns: [{ f: function (t) { return 2 + 19.6 * t - 4.9 * t * t; }, domain: [0, 4.09] }],
+      tangent: { f: 0, at: 3, slope: -9.8, half: 0.5 }, dots: [{ x: 2, y: 21.6, label: '(2, 21.6)', at: 'n' }, { x: 3, y: 16.7, label: '(3, 16.7)', at: 'ne' }],
+      aria: 'The graph of the height h(t) = 2 + 19.6t − 4.9t squared: a parabola that starts at 2 m, peaks at (2, 21.6) and falls back to the ground near t = 4.1. A tangent line of slope −9.8 touches it at (3, 16.7).' },
+    after: 'The ball is at rest at the top, `t = 2`. At `t = 3` the tangent line has slope `v(3) = −9.8`, and the ball is on its way down.' }
 ];
 
 /* PARENTHESIS SLIPS. Typing x+3/x+4 for (x + 3)/(x + 4) is the commonest typing slip, and the engine's "Reads as" line
@@ -3216,7 +3490,7 @@ function backHTML() {
 function page() {
   return header('Unit 5 Practice', SECTIONS_P.map(function (s) { return ['#' + s.id, s.nav || s.title]; }).concat([['#sec-back', 'Next']])) +
     '<main id="top">' + hero({ kicker: 'Calculus I · Unit 5: Differentiation Rules', title: 'Unit 5 Practice',
-      dek: 'Use this page after you read Unit 5: Differentiation Rules and Unit 5 Worked Examples. For each problem, choose the method, then type each line of the work. Each line is checked before the next one opens. Type a power with ⟦^⟧, as in ⟦x^2⟧ or ⟦x^(1/3)⟧, and put a whole top or bottom in parentheses, as in ⟦(x + 1)/(x − 2)⟧.' }) +
+      dek: 'Use this page after you read Unit 5: Differentiation Rules and Unit 5 Worked Examples. For each problem, choose the method, then type each line of the work. Each line is checked before the next one opens. Problems 9 to 17, under More Practice, are optional. Type a power with ⟦^⟧, as in ⟦x^2⟧ or ⟦x^(1/3)⟧, and put a whole top or bottom in parentheses, as in ⟦(x + 1)/(x − 2)⟧.' }) +
     SECTIONS_P.map(sectionHTML).join('') + backHTML() + '</main>';
 }
 expose({ PROBLEMS: PROBLEMS, problemHTML: problemHTML, formProblem: formProblem, stepDone: stepDone });
@@ -3303,6 +3577,18 @@ selfcheck.add('a fraction typed without its parentheses gets the parentheses dia
   });
   if (!n) return { ok: false, detail: 'no row carries a parentheses slip' };
   return bad.length ? { ok: false, detail: bad.join('; ') } : { ok: true, detail: n + ' slips on ' + rows.length + ' rows' };
+});
+
+selfcheck.add('More Practice holds Problems 9 to 17, after every required problem, and the hero names that range', function () {
+  var more = PROBLEMS.filter(function (p) { return p.sec === 'sec-more'; }), bad = [];
+  var nums = more.map(function (p) { return p.num; });
+  if (nums.join(',') !== '9,10,11,12,13,14,15,16,17') bad.push('numbers ' + nums.join(','));
+  if (PROBLEMS.some(function (p) { return p.sec !== 'sec-more' && p.num > 8; })) bad.push('a required problem after Problem 8');
+  var hero = (document.querySelector('main') || document.body).textContent;
+  if (hero.indexOf('Problems 9 to 17, under More Practice, are optional.') < 0) bad.push('hero range missing');
+  var t = ['1/2sqrt(x)', '(1/2)sqrt(x)'].map(function (s) { return judge(ITEMS['m3-1'], s).msg || ''; });
+  if (t[0].indexOf('Without parentheses') !== 0 || t[1].indexOf('Subtract 1') !== 0) bad.push('m3-1 typing slips: ' + t.join(' | '));
+  return bad.length ? { ok: false, detail: bad.join('; ') } : { ok: true, detail: more.length + ' optional problems' };
 });
 
 selfcheck.add('a fractional exponent typed without its parentheses gets the exponent diagnosis', function () {
