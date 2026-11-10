@@ -1,4 +1,4 @@
-# Calculus I: Unit 5 Practice: Differentiation Rules (interactive lesson)
+# Calculus I: Unit 5 Practice (interactive lesson)
 
 A standalone interactive lesson page for Rize's Calculus I course (catalog code `MATHS I`). No login and no backend; progress is saved in the browser's own `localStorage`.
 
